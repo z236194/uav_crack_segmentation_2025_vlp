@@ -1,7 +1,4 @@
 #!/usr/bin/env python3
-"""
-Two-step inference for MMSeg >= 1.0 (mmseg310)
-"""
 
 import os
 import argparse
@@ -15,29 +12,19 @@ from mmengine.config import Config
 from mmengine.runner import Runner
 from mmengine.registry import init_default_scope
 from mmseg.structures import SegDataSample
-from mmcv.transforms import LoadImageFromFile    # <<< FIXED HERE
+from mmcv.transforms import LoadImageFromFile
 
-
-#############################################
-# --- Simple post-processing utilities -----
-#############################################
 def postprocess(prob, threshold=0.35):
     mask = (prob >= threshold).astype(np.uint8) * 255
     return mask
 
 
-#############################################
-# ----------- Build Model ------------------
-#############################################
 def build_model(cfg_path, ckpt_path, device='cuda:0'):
     cfg = Config.fromfile(cfg_path)
 
-    # ------------------------------
-    # FIX: inference mode requires a work_dir
-    # ------------------------------
+
     if 'work_dir' not in cfg:
         cfg.work_dir = './tmp_infer'   # <<< ADD THIS LINE
-    # ------------------------------
 
     init_default_scope(cfg.default_scope)
     runner = Runner.from_cfg(cfg)
@@ -48,9 +35,7 @@ def build_model(cfg_path, ckpt_path, device='cuda:0'):
     return model, cfg
 
 
-#############################################
-# ---------- Single Image Infer ------------
-#############################################
+
 def infer_image(model, cfg, img_path):
     import cv2
     import torch
@@ -63,11 +48,11 @@ def infer_image(model, cfg, img_path):
     # device compatible with mmseg 1.x
     device = next(model.parameters()).device
 
-    # ---- to tensor ----
+    #to tensor
     img_tensor = torch.from_numpy(img_rgb).permute(2, 0, 1).float()
     img_tensor = img_tensor.unsqueeze(0).to(device)
 
-    # ---- build SegDataSample ----
+    # build SegDataSample
     data_sample = SegDataSample()
     data_sample.set_metainfo({
         'ori_shape': (H, W),
@@ -83,20 +68,17 @@ def infer_image(model, cfg, img_path):
         'data_samples': [data_sample]
     }
 
-    # ---- forward ----
+    # forward
     with torch.no_grad():
         pred = model.test_step(data)[0]
 
-    # ---- probability map ----
+    # probability map
     seg_logits = pred._seg_logits.data  # shape: (2,H,W)
     prob = seg_logits.softmax(dim=0)[1].cpu().numpy()
 
     return prob
 
 
-#############################################
-# --------- Folder Inference ---------------
-#############################################
 def process_folder(model, cfg, input_dir, out_dir, threshold):
     os.makedirs(out_dir, exist_ok=True)
     imgs = sorted([p for p in Path(input_dir).glob("*") 
@@ -117,9 +99,6 @@ def process_folder(model, cfg, input_dir, out_dir, threshold):
 
 
 
-#############################################
-# ---------------- Main --------------------
-#############################################
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", required=True)

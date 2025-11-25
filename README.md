@@ -7,21 +7,15 @@
 
 ## 亮点
 
-- 基于 MMSegmentation 1.0 训练的可复现 Deeplabv3+ 模型
+- 基于 MMSegmentation 1.2.2 训练的可复现 Deeplabv3+ 模型
 - 完整开源训练代码
 - 包含辅助头 FCNHead，提升训练稳定性
-- 提供 PyTorch .pth 权重文件 与 ONNX 导出脚本
+- 提供 PyTorch .pth 权重文件
 - 完整评估脚本（支持 mIoU、Dice、IoU、Precision、Recall、F1）
 
 -------------------------------------------------------
 
 # 1. 环境配置
-
-使用 requirements.txt：
-
-pip install -r requirements.txt
-
-或使用 conda（推荐）：
 
 conda create -n mmseg python=3.10 -y
 conda activate mmseg
@@ -49,7 +43,7 @@ dataset/
 
 训练配置文件位于：
 
-configs/uav_crack_deeplabv3plus.py
+configs/crack/uav_crack_deeplabv3plus_378x672_c1enhanced.py
 
 数据集定义位于：
 
@@ -59,17 +53,18 @@ mmseg/datasets/uav_crack_dataset.py
 
 # 4. 训练方式
 
-python tools/train.py configs/uav_crack_deeplabv3plus.py
+python tools/train.py configs/uav_crack_deeplabv3plus_378x672_c1enhanced.py
 
 - batch size：2
 - crop size：378×672
 - 优化器与学习率可在配置文件中调整
+- train.py 来自克隆到本地的MMseg 1.2.2
 
 -------------------------------------------------------
 
 # 5. 推理（预测）
 
-python tools/test.py configs/uav_crack_deeplabv3plus.py \
+python tools/test.py configs/crack/uav_crack_deeplabv3plus_378x672_c1enhanced.py \
     work_dirs/uav_crack/latest.pth \
     --show-dir results/
 
@@ -95,27 +90,12 @@ python tools/eval_uav_miou.py \
 
 -------------------------------------------------------
 
-# 7. 模型权重（提交比赛用）
+# 7. 模型权重链接
 
-请将你的 .pth 和 ONNX 模型上传到网盘，将链接粘贴到此处。
-
-- PyTorch 模型下载：
-  [百度网盘链接]（待补充）
-
-- ONNX 模型下载：
-  [百度网盘链接]（待补充）
+https://huggingface.co/Radiation-Synthesis/uav_crack_segmentation_2025/tree/main
 
 -------------------------------------------------------
 
-# 8. 导出 ONNX
-
-python tools/pytorch2onnx.py \
-    configs/uav_crack_deeplabv3plus.py \
-    work_dirs/uav_crack/latest.pth \
-    --output-file deeplabv3plus_uav.onnx \
-    --shape 378 672
-
--------------------------------------------------------
 
 # License
 

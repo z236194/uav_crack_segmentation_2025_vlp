@@ -1,0 +1,25 @@
+
+# Core deep learning dependencies
+torch==2.2.0
+torchvision==0.17.0
+
+# MMCV / MMEngine / MMSegmentation
+mmengine==0.10.3
+mmcv==2.0.1
+mmsegmentation==1.2.2
+
+# Image processing & scientific
+opencv-python==4.9.0.80
+numpy==1.26.4
+tqdm==4.66.1
+Pillow==10.2.0
+matplotlib==3.8.2
+scikit-image==0.22.0
+scipy==1.11.4
+
+# File handling & utils
+pyyaml==6.0.1
+requests==2.31.0
+
+# Optional but recommended
+rich==13.7.0

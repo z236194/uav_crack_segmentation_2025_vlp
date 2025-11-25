@@ -13,16 +13,13 @@ _base_ = [
 crop_size = (378, 672)
 data_preprocessor = dict(size=crop_size)
 
-# 关键：修改 decode_head 的 C1 分支容量
+
 model = dict(
     data_preprocessor=data_preprocessor,
 
-    # ---------- 只动 decode_head 这一段 ----------
+
     decode_head=dict(
-        # 在 base 模型中，deeplabv3plus head 的 C1 默认是：
-        # c1_in_channels = 256
-        # c1_channels = 48        <-- 我们增强这个
-        c1_channels=96,           # <<< 提升低层特征容量（48 → 96）
+        c1_channels=96,
 
         num_classes=2,
         loss_decode=[
@@ -41,7 +38,7 @@ model = dict(
 
 train_dataloader = dict(batch_size=2, num_workers=2)
 
-# ------ 完整保持你原本的 checkpoint hook 配置 ------
+
 default_hooks = dict(
     checkpoint=dict(
         type='CheckpointHook',
